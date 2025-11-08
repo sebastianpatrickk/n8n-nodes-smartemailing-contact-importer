@@ -50,7 +50,7 @@ export class SmartemailingContactImporterApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://app.smartemailing.cz/api/v3',
-			url: '/v1/user',
+			url: '/check-credentials',
 		},
 	};
 }
