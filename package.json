@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"description": "n8n community node for importing contacts to Smartemailing",
 	"license": "MIT",
-	"homepage": "",
+	"homepage": "https://github.com/sebastianpatrickk/n8n-nodes-smartemailing-contact-importer#readme",
 	"keywords": [
 		"n8n-community-node-package"
 	],

@@ -17,7 +17,7 @@ export class SmartemailingContactImporterApi implements ICredentialType {
 
 	// Link to your community node's README
 	documentationUrl =
-		'https://github.com/org/-smartemailing-contact-importer?tab=readme-ov-file#credentials';
+		'https://github.com/sebastianpatrickk/n8n-nodes-smartemailing-contact-importer#credentials';
 
 	properties: INodeProperties[] = [
 		{
