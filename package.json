@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-smartemailing-contact-importer",
-	"version": "0.1.0",
+	"version": "1.0.1",
 	"description": "n8n community node for importing contacts to Smartemailing",
 	"license": "MIT",
 	"homepage": "https://github.com/sebastianpatrickk/n8n-nodes-smartemailing-contact-importer#readme",
@@ -13,7 +13,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/sebastianpatrickk/n8n-nodes-smartemailing-contact-importer.git"
+		"url": "git+https://github.com/sebastianpatrickk/n8n-nodes-smartemailing-contact-importer.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
