@@ -48,9 +48,9 @@ interface FacebookForm {
 	status: string;
 }
 
-export class FacebookLeadAdsTrigger implements INodeType {
+export class FacebookLeadAdsTriggerMultiForm implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Facebook Lead Ads Trigger (Multi-Form)',
+		displayName: 'Facebook Lead Ads Multi-Form Trigger',
 		name: 'facebookLeadAdsTriggerMultiForm',
 		icon: 'file:facebookLeadAds.svg',
 		group: ['trigger'],
@@ -59,13 +59,14 @@ export class FacebookLeadAdsTrigger implements INodeType {
 		description:
 			'Triggers when a new lead is submitted through Facebook Lead Ads. Supports multiple forms unlike the built-in trigger.',
 		defaults: {
-			name: 'Facebook Lead Ads Trigger',
+			name: 'Facebook Lead Ads Multi-Form Trigger',
 		},
-		// @ts-expect-error - usableAsTool is a valid n8n property
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore - usableAsTool is a valid n8n property not in types
 		usableAsTool: true,
 		inputs: [],
 		outputs: ['main'],
-		credentials: [{ name: 'facebookLeadAdsOAuth2Api', required: true }],
+		credentials: [{ name: 'facebookLeadAdsMultiFormOAuth2Api', required: true }],
 		webhooks: [
 			{
 				name: 'default',
@@ -87,13 +88,16 @@ export class FacebookLeadAdsTrigger implements INodeType {
 				displayName: 'Verify Token',
 				name: 'verifyToken',
 				type: 'string',
+				typeOptions: {
+					password: true,
+				},
 				default: '',
 				required: true,
 				description:
 					'Custom string for webhook verification. Must match the Verify Token configured in your Facebook App webhook settings.',
 			},
 			{
-				displayName: 'Page',
+				displayName: 'Page Name or ID',
 				name: 'page',
 				type: 'options',
 				typeOptions: {
@@ -104,7 +108,7 @@ export class FacebookLeadAdsTrigger implements INodeType {
 					'Select a Facebook Page to filter leads. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 			},
 			{
-				displayName: 'Form',
+				displayName: 'Form Name or ID',
 				name: 'form',
 				type: 'options',
 				typeOptions: {
@@ -162,7 +166,7 @@ export class FacebookLeadAdsTrigger implements INodeType {
 				});
 
 				try {
-					const credentials = await this.getCredentials('facebookLeadAdsOAuth2Api');
+					const credentials = await this.getCredentials('facebookLeadAdsMultiFormOAuth2Api');
 					const accessToken = credentials.oauthTokenData as IDataObject;
 					const token = (accessToken?.access_token as string) || '';
 
@@ -183,7 +187,7 @@ export class FacebookLeadAdsTrigger implements INodeType {
 							});
 						}
 					}
-				} catch (error) {
+				} catch {
 					// Return empty list on error, user can still use expressions
 				}
 
@@ -206,7 +210,7 @@ export class FacebookLeadAdsTrigger implements INodeType {
 				}
 
 				try {
-					const credentials = await this.getCredentials('facebookLeadAdsOAuth2Api');
+					const credentials = await this.getCredentials('facebookLeadAdsMultiFormOAuth2Api');
 					const accessToken = credentials.oauthTokenData as IDataObject;
 					const token = (accessToken?.access_token as string) || '';
 
@@ -241,7 +245,7 @@ export class FacebookLeadAdsTrigger implements INodeType {
 							});
 						}
 					}
-				} catch (error) {
+				} catch {
 					// Return empty list on error, user can still use expressions
 				}
 
@@ -306,7 +310,7 @@ export class FacebookLeadAdsTrigger implements INodeType {
 		}
 
 		// Get credentials for Graph API calls
-		const credentials = await this.getCredentials('facebookLeadAdsOAuth2Api');
+		const credentials = await this.getCredentials('facebookLeadAdsMultiFormOAuth2Api');
 
 		const filterPageId = this.getNodeParameter('page', '') as string;
 		const filterFormId = this.getNodeParameter('form', '') as string;
@@ -399,10 +403,9 @@ export class FacebookLeadAdsTrigger implements INodeType {
 								}
 							}
 						}
-					} catch (error) {
+					} catch {
 						// If fetching fails, still return the basic lead data
-						leadData['fetch_error'] =
-							error instanceof Error ? error.message : 'Failed to fetch lead data';
+						leadData['fetch_error'] = 'Failed to fetch lead data from Graph API';
 					}
 				}
 

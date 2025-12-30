@@ -32,11 +32,11 @@
 		"strict": true,
 		"credentials": [
 			"dist/credentials/SmartemailingContactImporterApi.credentials.js",
-			"dist/credentials/FacebookLeadAdsApi.credentials.js"
+			"dist/credentials/FacebookLeadAdsMultiFormOAuth2Api.credentials.js"
 		],
 		"nodes": [
 			"dist/nodes/SmartemailingContactImporter/SmartemailingContactImporter.node.js",
-			"dist/nodes/FacebookLeadAdsTrigger/FacebookLeadAdsTrigger.node.js"
+			"dist/nodes/FacebookLeadAdsTrigger/FacebookLeadAdsTriggerMultiForm.node.js"
 		]
 	},
 	"devDependencies": {

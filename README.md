@@ -13,58 +13,62 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ---
 
-# Facebook Lead Ads Trigger
+# Facebook Lead Ads Multi-Form Trigger
 
-The Facebook Lead Ads Trigger node receives real-time webhook notifications when new leads are submitted through Facebook Lead Ads. Unlike the built-in n8n trigger which only supports one form per Facebook App, this custom trigger can handle **multiple lead forms** by using optional filters.
+The Facebook Lead Ads Trigger node receives real-time webhook notifications when new leads are submitted through Facebook Lead Ads. Unlike the built-in n8n trigger which only supports one form per Facebook App, this custom trigger can handle **multiple lead forms** by filtering on Page and Form.
 
 ## Facebook Lead Ads Credentials
 
-This node requires Facebook Lead Ads API credentials:
+This node uses **OAuth2 authentication** with Facebook. When you first add the node, you'll be prompted to connect your Facebook account with the following permissions:
 
-1. **App ID**: Your Facebook App ID from developers.facebook.com
-2. **App Secret**: Your Facebook App Secret
-3. **Page Access Token**: Long-lived Page Access Token with `pages_read_engagement` and `leads_retrieval` permissions
-4. **Verify Token**: Custom string you create for webhook verification (must match the token in Facebook App settings)
+- `leads_retrieval` - Required to read lead data
+- `pages_show_list` - Required to list your pages
+- `pages_manage_metadata` - Required to subscribe to webhooks
+- `pages_manage_ads` - Required for lead ads access
+- `ads_management` - Required for lead ads access
+- `pages_read_engagement` - Required for page access
 
-### Setting Up Facebook App
+### Setting Up
 
-1. Go to [Facebook Developers](https://developers.facebook.com/) and create a new app (or use existing)
-2. Add the **Webhooks** product to your app
-3. Add the **Marketing API** product to your app
-4. Configure webhook subscription:
-   - Object: `Page`
-   - Callback URL: Your n8n webhook URL (shown in the trigger node)
-   - Verify Token: The same custom string you set in n8n credentials
-   - Fields: Subscribe to `leadgen`
-5. Subscribe your Facebook Page to the app:
+1. Go to [Facebook Developers](https://developers.facebook.com/) and create an app (or use existing)
+2. In n8n, add the **Facebook Lead Ads Multi-Form Trigger** node
+3. Click to create new credentials - this will open Facebook OAuth flow
+4. Grant the required permissions
+5. Select your **Page** and **Form** from the dropdowns (they load automatically!)
+
+## Webhook Configuration
+
+You need to configure Facebook to send webhooks to your n8n instance:
+
+1. In Facebook Developers, go to your app → Webhooks
+2. Add a new subscription for **Page** object
+3. Configure:
+   - **Callback URL**: Your n8n webhook URL (shown in the trigger node)
+   - **Verify Token**: The same string you enter in the **Verify Token** parameter
+   - **Fields**: Subscribe to `leadgen`
+4. Subscribe your Facebook Page to the app:
    ```bash
    curl -i -X POST "https://graph.facebook.com/{page-id}/subscribed_apps?subscribed_fields=leadgen&access_token={page-access-token}"
    ```
 
-### Getting a Long-Lived Page Access Token
-
-1. Go to [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
-2. Select your app and get a User Access Token with `pages_read_engagement`, `leads_retrieval`, and `pages_manage_metadata` permissions
-3. Exchange for a long-lived token:
-   ```bash
-   curl -X GET "https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id={app-id}&client_secret={app-secret}&fb_exchange_token={short-lived-token}"
-   ```
-4. Get the Page Access Token:
-   ```bash
-   curl -X GET "https://graph.facebook.com/v18.0/me/accounts?access_token={long-lived-user-token}"
-   ```
-
 ## Facebook Lead Ads Trigger Parameters
 
-### Filter by Page ID
+### Verify Token
+
+- **Required**: Yes
+- **Description**: Custom string for webhook verification. Must match the Verify Token configured in your Facebook App webhook settings.
+
+### Page Name or ID
 
 - **Required**: No
-- **Description**: Only process leads from a specific Facebook Page. Leave empty to receive leads from all pages.
+- **Type**: Dropdown (dynamically loaded from your Facebook account)
+- **Description**: Select a Facebook Page to filter leads. Leave as "All Pages" to receive leads from all your pages.
 
-### Filter by Form ID
+### Form Name or ID
 
 - **Required**: No
-- **Description**: Only process leads from a specific Lead Form. Leave empty to receive leads from all forms. This allows you to create multiple triggers for different forms.
+- **Type**: Dropdown (dynamically loaded based on selected Page)
+- **Description**: Select a Lead Form to filter leads. Leave as "All Forms" to receive leads from all forms on the selected page.
 
 ### Fetch Full Lead Data
 
@@ -82,18 +86,18 @@ When a new lead is submitted, the node outputs:
 
 ```json
 {
-  "leadgen_id": "123456789",
-  "page_id": "987654321",
-  "form_id": "456789123",
-  "ad_id": "789123456",
-  "created_time": "2024-01-15T10:30:00+0000",
-  "emailaddress": "user@example.com",
-  "name": "John Doe",
-  "phone": "+1234567890",
-  "field_data": [
-    { "name": "email", "values": ["user@example.com"] },
-    { "name": "full_name", "values": ["John Doe"] }
-  ]
+	"leadgen_id": "123456789",
+	"page_id": "987654321",
+	"form_id": "456789123",
+	"ad_id": "789123456",
+	"created_time": "2024-01-15T10:30:00+0000",
+	"emailaddress": "user@example.com",
+	"name": "John Doe",
+	"phone": "+1234567890",
+	"field_data": [
+		{ "name": "email", "values": ["user@example.com"] },
+		{ "name": "full_name", "values": ["John Doe"] }
+	]
 }
 ```
 
@@ -274,11 +278,12 @@ The node returns the response from the Smartemailing API import endpoint, which 
 
 ### 1.1.0
 
-- Added Facebook Lead Ads Trigger node
+- Added Facebook Lead Ads Multi-Form Trigger node
 - Receive real-time leads from Facebook Lead Ads
-- Support for multiple forms with Page ID and Form ID filters
+- **Dynamic Page and Form dropdowns** - just like the built-in trigger!
+- Support for filtering by Page and Form (or receive from all)
+- OAuth2 authentication with Facebook
 - Automatic field mapping for SmartEmailing compatibility
-- New Facebook Lead Ads API credentials
 
 ### 1.0.0
 
