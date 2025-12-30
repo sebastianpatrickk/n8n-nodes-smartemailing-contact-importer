@@ -10,10 +10,7 @@ export class SmartemailingContactImporterApi implements ICredentialType {
 
 	displayName = 'Smartemailing Contact Importer API';
 
-	icon = {
-		light: 'file:smartemailingContactImporter.svg',
-		dark: 'file:smartemailingContactImporter.dark.svg',
-	} as const;
+	icon = 'file:smartemailingContactImporter.svg';
 
 	// Link to your community node's README
 	documentationUrl =
