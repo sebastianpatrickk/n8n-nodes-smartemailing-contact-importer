@@ -1,5 +1,5 @@
 import {
-	NodeConnectionTypes,
+	NodeConnectionType,
 	NodeOperationError,
 	type IDataObject,
 	type IExecuteFunctions,
@@ -14,10 +14,7 @@ export class SmartemailingContactImporter implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Smartemailing Contact Importer',
 		name: 'smartemailingContactImporter',
-		icon: {
-			light: 'file:smartemailingContactImporter.svg',
-			dark: 'file:smartemailingContactImporter.dark.svg',
-		},
+		icon: 'file:smartemailingContactImporter.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"]}}',
@@ -25,9 +22,10 @@ export class SmartemailingContactImporter implements INodeType {
 		defaults: {
 			name: 'Smartemailing Contact Importer',
 		},
+		// @ts-expect-error - usableAsTool is a valid n8n property
 		usableAsTool: true,
-		inputs: [NodeConnectionTypes.Main],
-		outputs: [NodeConnectionTypes.Main],
+		inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
 		credentials: [{ name: 'smartemailingContactImporterApi', required: true }],
 		requestDefaults: {
 			baseURL: 'https://app.smartemailing.cz/api/v3',

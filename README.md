@@ -1,6 +1,9 @@
 # n8n-nodes-smartemailing-contact-importer
 
-This n8n community node allows you to import contacts into Smartemailing contact lists directly from your n8n workflows.
+This n8n community node package provides:
+
+1. **Smartemailing Contact Importer** - Import contacts into Smartemailing contact lists
+2. **Facebook Lead Ads Trigger** - Receive real-time leads from Facebook Lead Ads (supports multiple forms)
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
@@ -8,7 +11,110 @@ This n8n community node allows you to import contacts into Smartemailing contact
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-## Credentials
+---
+
+# Facebook Lead Ads Trigger
+
+The Facebook Lead Ads Trigger node receives real-time webhook notifications when new leads are submitted through Facebook Lead Ads. Unlike the built-in n8n trigger which only supports one form per Facebook App, this custom trigger can handle **multiple lead forms** by using optional filters.
+
+## Facebook Lead Ads Credentials
+
+This node requires Facebook Lead Ads API credentials:
+
+1. **App ID**: Your Facebook App ID from developers.facebook.com
+2. **App Secret**: Your Facebook App Secret
+3. **Page Access Token**: Long-lived Page Access Token with `pages_read_engagement` and `leads_retrieval` permissions
+4. **Verify Token**: Custom string you create for webhook verification (must match the token in Facebook App settings)
+
+### Setting Up Facebook App
+
+1. Go to [Facebook Developers](https://developers.facebook.com/) and create a new app (or use existing)
+2. Add the **Webhooks** product to your app
+3. Add the **Marketing API** product to your app
+4. Configure webhook subscription:
+   - Object: `Page`
+   - Callback URL: Your n8n webhook URL (shown in the trigger node)
+   - Verify Token: The same custom string you set in n8n credentials
+   - Fields: Subscribe to `leadgen`
+5. Subscribe your Facebook Page to the app:
+   ```bash
+   curl -i -X POST "https://graph.facebook.com/{page-id}/subscribed_apps?subscribed_fields=leadgen&access_token={page-access-token}"
+   ```
+
+### Getting a Long-Lived Page Access Token
+
+1. Go to [Graph API Explorer](https://developers.facebook.com/tools/explorer/)
+2. Select your app and get a User Access Token with `pages_read_engagement`, `leads_retrieval`, and `pages_manage_metadata` permissions
+3. Exchange for a long-lived token:
+   ```bash
+   curl -X GET "https://graph.facebook.com/v18.0/oauth/access_token?grant_type=fb_exchange_token&client_id={app-id}&client_secret={app-secret}&fb_exchange_token={short-lived-token}"
+   ```
+4. Get the Page Access Token:
+   ```bash
+   curl -X GET "https://graph.facebook.com/v18.0/me/accounts?access_token={long-lived-user-token}"
+   ```
+
+## Facebook Lead Ads Trigger Parameters
+
+### Filter by Page ID
+
+- **Required**: No
+- **Description**: Only process leads from a specific Facebook Page. Leave empty to receive leads from all pages.
+
+### Filter by Form ID
+
+- **Required**: No
+- **Description**: Only process leads from a specific Lead Form. Leave empty to receive leads from all forms. This allows you to create multiple triggers for different forms.
+
+### Fetch Full Lead Data
+
+- **Required**: No (default: `true`)
+- **Description**: When enabled, fetches complete lead data (email, name, custom fields) from the Facebook Graph API. When disabled, only returns the webhook event metadata.
+
+### Options
+
+- **Graph API Version**: The Facebook Graph API version to use (default: `v18.0`)
+- **Lead Fields**: Comma-separated list of fields to fetch from the lead
+
+## Facebook Lead Ads Trigger Output
+
+When a new lead is submitted, the node outputs:
+
+```json
+{
+  "leadgen_id": "123456789",
+  "page_id": "987654321",
+  "form_id": "456789123",
+  "ad_id": "789123456",
+  "created_time": "2024-01-15T10:30:00+0000",
+  "emailaddress": "user@example.com",
+  "name": "John Doe",
+  "phone": "+1234567890",
+  "field_data": [
+    { "name": "email", "values": ["user@example.com"] },
+    { "name": "full_name", "values": ["John Doe"] }
+  ]
+}
+```
+
+The output is formatted to be directly compatible with the **Smartemailing Contact Importer** node - just connect them together!
+
+## Example Workflow: Facebook Leads to Smartemailing
+
+1. Add **Facebook Lead Ads Trigger** node
+2. Configure credentials and optional filters
+3. Copy the webhook URL and configure it in your Facebook App
+4. Connect to **Smartemailing Contact Importer** node
+5. Select your Smartemailing contact list
+6. Activate the workflow
+
+---
+
+# Smartemailing Contact Importer
+
+Import contacts into Smartemailing contact lists directly from your n8n workflows.
+
+## Smartemailing Credentials
 
 This node requires Smartemailing API credentials:
 
@@ -156,6 +262,8 @@ The node returns the response from the Smartemailing API import endpoint, which 
 
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
 - [Smartemailing API Documentation](https://app.smartemailing.cz/docs/api/v3/index)
+- [Facebook Lead Ads API Documentation](https://developers.facebook.com/docs/marketing-api/guides/lead-ads)
+- [Facebook Webhooks Documentation](https://developers.facebook.com/docs/graph-api/webhooks/getting-started)
 
 ## Compatibility
 
@@ -163,6 +271,14 @@ The node returns the response from the Smartemailing API import endpoint, which 
 - **Smartemailing API**: v3
 
 ## Version History
+
+### 1.1.0
+
+- Added Facebook Lead Ads Trigger node
+- Receive real-time leads from Facebook Lead Ads
+- Support for multiple forms with Page ID and Form ID filters
+- Automatic field mapping for SmartEmailing compatibility
+- New Facebook Lead Ads API credentials
 
 ### 1.0.0
 

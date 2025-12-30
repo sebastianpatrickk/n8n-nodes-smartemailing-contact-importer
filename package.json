@@ -1,7 +1,7 @@
 {
 	"name": "n8n-nodes-smartemailing-contact-importer",
 	"version": "1.0.1",
-	"description": "n8n community node for importing contacts to Smartemailing",
+	"description": "n8n community nodes for importing contacts to Smartemailing and Facebook Lead Ads integration",
 	"license": "MIT",
 	"homepage": "https://github.com/sebastianpatrickk/n8n-nodes-smartemailing-contact-importer#readme",
 	"keywords": [
@@ -31,10 +31,12 @@
 		"n8nNodesApiVersion": 1,
 		"strict": true,
 		"credentials": [
-			"dist/credentials/SmartemailingContactImporterApi.credentials.js"
+			"dist/credentials/SmartemailingContactImporterApi.credentials.js",
+			"dist/credentials/FacebookLeadAdsApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/SmartemailingContactImporter/SmartemailingContactImporter.node.js"
+			"dist/nodes/SmartemailingContactImporter/SmartemailingContactImporter.node.js",
+			"dist/nodes/FacebookLeadAdsTrigger/FacebookLeadAdsTrigger.node.js"
 		]
 	},
 	"devDependencies": {
