@@ -14,7 +14,7 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,11 +65,11 @@ jobs:
           name: Release v${{ steps.version-check.outputs.package_version }}
           body: |
             ## n8n-nodes-smartemailing-contact-importer v${{ steps.version-check.outputs.package_version }}
-            
+
             📦 [View on npm](https://www.npmjs.com/package/n8n-nodes-smartemailing-contact-importer)
-            
+
             ✅ Published with [npm provenance](https://docs.npmjs.com/generating-provenance-statements) - verified build from this repository!
-            
+
             ### Installation
             ```bash
             npm install n8n-nodes-smartemailing-contact-importer
